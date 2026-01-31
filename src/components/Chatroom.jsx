@@ -3,7 +3,9 @@ import { io } from 'socket.io-client';
 import PropTypes from 'prop-types';
 
 // const socket = io.connect('http://localhost:3000');
-const socket = io.connect(import.meta.env.VITE_SERVER_URL);
+// const socket = io.connect(import.meta.env.VITE_SERVER_URL);
+// আপনার Client সাইড কোডে
+const socket = io.connect('https://my-chat-server-n34m.onrender.com');
 const Chatroom = ({ username, room }) => {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);

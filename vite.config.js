@@ -12,4 +12,7 @@ export default defineConfig({
       },
     }),
   ],
+  define: {
+    global: 'window', // এখানে global কে window হিসেবে ডিফাইন করে দিন
+  },
 })

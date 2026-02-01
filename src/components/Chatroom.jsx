@@ -17,6 +17,39 @@ const Chatroom = ({ username, room }) => {
     const pc = useRef(null);
     const remoteAudioRef = useRef(null);
 
+    const [callDuration, setCallDuration] = useState(0); // সেকেন্ডে সময়
+    const timerRef = useRef(null);
+    const ringtoneRef = useRef(new Audio('/ringing.mp3')); // রিংটোন ফাইল
+   // টাইমার স্টার্ট করার ফাংশন
+    const startTimer = () => {
+        setCallDuration(0);
+        timerRef.current = setInterval(() => {
+            setCallDuration((prev) => prev + 1);
+        }, 1000);
+    };
+
+    // টাইমার স্টপ করার ফাংশন
+    const stopTimer = () => {
+        clearInterval(timerRef.current);
+        setCallDuration(0);
+    };
+
+    // সময়কে ফরম্যাট করার ফাংশন (00:00)
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+    // রিংটোন বাজানো এবং বন্ধ করা
+    useEffect(() => {
+        if (incomingCall) {
+            ringtoneRef.current.loop = true;
+            ringtoneRef.current.play().catch(e => console.log("Audio play deferred"));
+        } else {
+            ringtoneRef.current.pause();
+            ringtoneRef.current.currentTime = 0;
+        }
+    }, [incomingCall]);
     useEffect(() => {
         socket.emit('join_room', room);
 
@@ -37,6 +70,7 @@ const Chatroom = ({ username, room }) => {
         
         socket.on('call_accepted', async (signal) => {
             await pc.current.setRemoteDescription(new RTCSessionDescription(signal));
+            startTimer();
         });
 
         socket.on('ice_candidate', async (data) => {
@@ -104,6 +138,7 @@ const Chatroom = ({ username, room }) => {
             createPeerConnection(stream);
             await pc.current.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
             const answer = await pc.current.createAnswer();
+             startTimer();
             await pc.current.setLocalDescription(answer);
             socket.emit('answer_call', { room, signal: answer });
             setIncomingCall(null);
@@ -115,6 +150,7 @@ const Chatroom = ({ username, room }) => {
         if (emitEvent) socket.emit('end_call', room);
         if (localStream) localStream.getTracks().forEach(track => track.stop());
         if (pc.current) pc.current.close();
+        stopTimer();
         setIsCalling(false);
         setIncomingCall(null);
         setLocalStream(null);
@@ -158,15 +194,18 @@ const Chatroom = ({ username, room }) => {
             {/* Header */}
             <div className="bg-white px-6 py-4 flex justify-between items-center border-b border-slate-100 shadow-sm z-10">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
-                        {room[0].toUpperCase()}
-                    </div>
+                    <div className="w-10 h-10 ...">{room[0].toUpperCase()}</div>
                     <div>
-                        <h2 className="font-bold text-slate-800 text-base leading-none capitalize">Room: {room}</h2>
-                        <p className="text-[11px] text-green-500 font-medium mt-1">● Online</p>
+                        <h2 className="font-bold ...">Room: {room}</h2>
+                        {isCalling ? (
+                            <p className="text-[11px] text-indigo-600 font-bold animate-pulse">
+                                📞 In Call: {formatTime(callDuration)}
+                            </p>
+                        ) : (
+                            <p className="text-[11px] text-green-500 font-medium mt-1">● Online</p>
+                        )}
                     </div>
                 </div>
-                
                 <div className="flex items-center gap-4">
                     {/* Call Button */}
                     {!isCalling ? (
@@ -190,12 +229,16 @@ const Chatroom = ({ username, room }) => {
             </div>
 
             {/* Incoming Call Notification */}
-            {incomingCall && (
-                <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[90%] bg-white p-4 shadow-2xl rounded-2xl border-2 border-indigo-500 z-50 animate-bounce">
-                    <p className="text-sm font-bold text-center text-slate-700">{incomingCall.from} is calling you...</p>
-                    <div className="flex justify-center gap-4 mt-3">
-                        <button onClick={acceptCall} className="bg-green-500 text-white px-6 py-2 rounded-xl text-sm font-bold">Accept</button>
-                        <button onClick={() => setIncomingCall(null)} className="bg-red-500 text-white px-6 py-2 rounded-xl text-sm font-bold">Reject</button>
+             {incomingCall && (
+                <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[90%] bg-white p-6 shadow-2xl rounded-2xl border-2 border-indigo-500 z-50 flex flex-col items-center">
+                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
+                        <svg className="w-8 h-8 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M20 15.5c-1.2 0-2.4-.2-3.6-.6-.3-.1-.7 0-1 .2l-2.2 2.2c-2.8-1.4-5.1-3.8-6.6-6.6l2.2-2.2c.3-.3.4-.7.2-1-.3-1.1-.5-2.3-.5-3.5 0-.6-.4-1-1-1H4c-.6 0-1 .4-1 1 0 9.4 7.6 17 17 17 .6 0 1-.4 1-1v-3.5c0-.6-.4-1-1-1z"/></svg>
+                    </div>
+                    <p className="text-lg font-bold text-slate-800">{incomingCall.from}</p>
+                    <p className="text-sm text-slate-500 mb-6">Incoming Audio Call...</p>
+                    <div className="flex gap-4 w-full">
+                        <button onClick={acceptCall} className="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition">Accept</button>
+                        <button onClick={() => { stopCall(true); setIncomingCall(null); }} className="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold hover:bg-red-600 transition">Decline</button>
                     </div>
                 </div>
             )}

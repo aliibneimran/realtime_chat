@@ -195,114 +195,110 @@ const Chatroom = ({ username, room }) => {
     };
 
     return (
-        <div className="flex flex-col h-[600px] w-full max-w-lg mx-auto bg-slate-50 border border-slate-200 rounded-3xl overflow-hidden shadow-2xl relative">
+       <div className="flex flex-col h-screen w-full max-w-2xl mx-auto bg-white md:h-[90vh] md:my-5 md:rounded-3xl md:shadow-2xl overflow-hidden relative border-slate-200 border">
             
-            {/* Header */}
-            <div className="bg-white px-6 py-4 flex justify-between items-center border-b border-slate-100 shadow-sm z-10">
+            {/* Header: Fixed Height */}
+            <header className="px-4 py-3 flex justify-between items-center border-b bg-white/80 backdrop-blur-md sticky top-0 z-20">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 ...">{room[0].toUpperCase()}</div>
-                    <div>
-                        <h2 className="font-bold ...">Room: {room}</h2>
+                    <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
+                        {room[0].toUpperCase()}
+                    </div>
+                    <div className="overflow-hidden">
+                        <h2 className="font-bold text-slate-800 text-sm md:text-base truncate capitalize">Room: {room}</h2>
                         {isCalling ? (
-                            <p className="text-[11px] text-indigo-600 font-bold animate-pulse">
-                                📞 In Call: {formatTime(callDuration)}
-                            </p>
+                            <p className="text-[10px] text-indigo-600 font-bold animate-pulse">📞 {formatTime(callDuration)}</p>
                         ) : (
-                            <p className="text-[11px] text-green-500 font-medium mt-1">● Online</p>
+                            <p className="text-[10px] text-green-500 font-medium">● Online</p>
                         )}
                     </div>
                 </div>
-                <div className="flex items-center gap-4">
-                    {/* Call Button */}
-                    {!isCalling ? (
-                        <button onClick={startCall} className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-full transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                            </svg>
-                        </button>
-                    ) : (
-                        <button onClick={() => stopCall(true)} className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-full transition animate-pulse">
-                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 rotate-[135deg]">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                            </svg>
-                        </button>
-                    )}
-                    <div className="text-right">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Logged in as</span>
-                    <span className="text-sm font-semibold text-indigo-600 capitalize">{username}</span>
-                </div>
-                </div>
-            </div>
 
-            {/* Incoming Call Notification */}
-             {incomingCall && (
-                <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[90%] bg-white p-6 shadow-2xl rounded-2xl border-2 border-indigo-500 z-50 flex flex-col items-center">
-                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
-                        <svg className="w-8 h-8 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M20 15.5c-1.2 0-2.4-.2-3.6-.6-.3-.1-.7 0-1 .2l-2.2 2.2c-2.8-1.4-5.1-3.8-6.6-6.6l2.2-2.2c.3-.3.4-.7.2-1-.3-1.1-.5-2.3-.5-3.5 0-.6-.4-1-1-1H4c-.6 0-1 .4-1 1 0 9.4 7.6 17 17 17 .6 0 1-.4 1-1v-3.5c0-.6-.4-1-1-1z"/></svg>
+                <div className="flex items-center gap-2">
+                    <button onClick={isCalling ? () => stopCall(true) : startCall} 
+                        className={`p-2.5 rounded-full transition-all ${isCalling ? 'bg-red-500 text-white animate-pulse' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'}`}>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                    </button>
+                    <div className="hidden sm:block text-right border-l pl-3">
+                        <span className="text-[10px] text-slate-400 block uppercase">User</span>
+                        <span className="text-xs font-bold text-indigo-600 capitalize">{username}</span>
                     </div>
-                    <p className="text-lg font-bold text-slate-800">{incomingCall.from}</p>
-                    <p className="text-sm text-slate-500 mb-6">Incoming Audio Call...</p>
-                    <div className="flex gap-4 w-full">
-                        <button onClick={acceptCall} className="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition">Accept</button>
-                        <button onClick={() => { stopCall(true); setIncomingCall(null); }} className="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold hover:bg-red-600 transition">Decline</button>
+                </div>
+            </header>
+
+            {/* Incoming Call Overlay */}
+            {incomingCall && (
+                <div className="absolute inset-x-0 top-0 bottom-0 bg-slate-900/90 z-50 flex flex-col items-center justify-center p-6 text-white backdrop-blur-sm">
+                    <div className="w-24 h-24 bg-indigo-500 rounded-full flex items-center justify-center mb-6 animate-pulse ring-8 ring-indigo-500/30">
+                        <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 24 24"><path d="M20 15.5c-1.2 0-2.4-.2-3.6-.6-.3-.1-.7 0-1 .2l-2.2 2.2c-2.8-1.4-5.1-3.8-6.6-6.6l2.2-2.2c.3-.3.4-.7.2-1-.3-1.1-.5-2.3-.5-3.5 0-.6-.4-1-1-1H4c-.6 0-1 .4-1 1 0 9.4 7.6 17 17 17 .6 0 1-.4 1-1v-3.5c0-.6-.4-1-1-1z"/></svg>
+                    </div>
+                    <h3 className="text-2xl font-bold mb-1">{incomingCall.from}</h3>
+                    <p className="text-indigo-300 mb-10">Incoming audio call...</p>
+                    <div className="flex gap-6 w-full max-w-xs">
+                        <button onClick={acceptCall} className="flex-1 bg-green-500 h-14 rounded-2xl font-bold text-lg shadow-lg shadow-green-500/40">Accept</button>
+                        <button onClick={() => { stopCall(true); setIncomingCall(null); }} className="flex-1 bg-red-500 h-14 rounded-2xl font-bold text-lg shadow-lg shadow-red-500/40">Decline</button>
                     </div>
                 </div>
             )}
 
             <audio ref={remoteAudioRef} autoPlay />
 
-            {/* Message Area */}
-            <div className="flex-1 p-6 overflow-y-auto space-y-6 bg-[#f8faff] custom-scrollbar">
+            {/* Message List: Scrollable */}
+            <main className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50 custom-scrollbar">
                 {messages.map((msg) => {
                     const isMe = msg.author === username;
                     return (
-                        <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}>
-                            <div className={`flex flex-col max-w-[75%] ${isMe ? 'items-end' : 'items-start'}`}>
-                                {!isMe && <span className="text-[10px] font-bold text-slate-400 ml-2 mb-1 uppercase tracking-tighter">{msg.author}</span>}
-                                <div className={`px-4 py-3 shadow-md ${isMe ? 'bg-indigo-600 text-white rounded-2xl rounded-tr-none' : 'bg-white text-slate-700 rounded-2xl rounded-tl-none border border-slate-100'}`}>
-                                    {msg.type === 'image' ? (
-                                        <img src={msg.image} alt="sent" className="rounded-lg max-h-60 w-full object-cover" />
-                                    ) : (
-                                        <p className="px-2 py-1 text-sm">{msg.message}</p>
-                                    )}
-                                    <p className={`text-[9px] mt-1.5 flex items-center gap-1 ${isMe ? 'text-indigo-200' : 'text-slate-400'}`}>
-                                        {msg.timestamp} {isMe && <span>✓✓</span>}
-                                    </p>
+                        <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[85%] sm:max-w-[75%] ${isMe ? 'items-end' : 'items-start'} flex flex-col`}>
+                                {!isMe && <span className="text-[10px] font-bold text-slate-400 mb-1 ml-1 uppercase">{msg.author}</span>}
+                                <div className={`px-2 py-2 rounded-2xl shadow-sm text-sm ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white text-slate-700 rounded-tl-none border border-slate-200'}`}>
+                                    {msg.type === 'image' ? <img src={msg.image} alt="sent" className="rounded-lg max-h-64 object-contain" /> : <p>{msg.message}</p>}
+                                    <p className={`text-[9px] mt-1 text-right ${isMe ? 'text-indigo-200' : 'text-slate-400'}`}>{msg.timestamp}</p>
                                 </div>
                             </div>
                         </div>
                     );
                 })}
                 <div ref={messagesEndRef} />
+            </main>
+
+            {/* Typing Indicator */}
+            <div className="px-4 h-4 bg-slate-50">
+                {typingMessage && <span className="text-[10px] italic text-slate-400 animate-pulse">{typingMessage}</span>}
             </div>
 
-            {/* Input Area */}
-            <div className="bg-white border-t border-slate-100 p-4">
-                <div className="h-5 mb-1 px-2">
-                    {typingMessage && <span className="text-[11px] italic text-slate-400 animate-pulse">{typingMessage}</span>}
-                </div>
-                <div className="flex items-center gap-3 bg-slate-50 p-1.5 rounded-2xl border border-slate-200">
-                    <label className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-full cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                        </svg>
-                        <input type="file" accept="image/*" className="hidden" onChange={sendImage} />
+            {/* Input Footer: Sticky at bottom */}
+            <footer className="p-3 bg-white border-t border-slate-100 pb-safe">
+                <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-2xl focus-within:ring-2 focus-within:ring-indigo-400 focus-within:bg-white transition-all">
+                    <label className="p-2 text-slate-500 hover:text-indigo-600 cursor-pointer">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                                const reader = new FileReader();
+                                reader.onload = () => {
+                                    const data = { room, author: username, image: reader.result, type: 'image', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), id: Date.now() };
+                                    socket.emit('send_message', data);
+                                    setMessages(prev => [...prev, data]);
+                                };
+                                reader.readAsDataURL(file);
+                            }
+                        }} />
                     </label>
                     <input
                         type="text"
-                        className="flex-1 px-4 py-2.5 bg-transparent border-none focus:ring-0 text-sm"
+                        className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-2 px-1"
                         value={message}
                         onChange={(e) => { setMessage(e.target.value); socket.emit('typing', { user_name: username, room }); }}
-                        placeholder="Aa"
+                        placeholder="Type a message..."
                         onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                     />
-                    <button onClick={sendMessage} disabled={!message.trim()} className="bg-indigo-600 text-white p-2.5 rounded-xl disabled:bg-slate-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                            <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
-                        </svg>
+                    <button onClick={sendMessage} disabled={!message.trim()} className="bg-indigo-600 text-white p-2 rounded-xl disabled:bg-slate-300 disabled:shadow-none shadow-md shadow-indigo-200">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" /></svg>
                     </button>
                 </div>
-            </div>
+            </footer>
         </div>
     );
 };
